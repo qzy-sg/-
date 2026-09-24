@@ -1,0 +1,422 @@
+[
+  {
+    "style_id": "modern",
+    "name": "现代简约",
+    "room": "现代客房",
+    "room_kinds": [
+      "主卧",
+      "次卧",
+      "儿童",
+      "客厅"
+    ],
+    "file": "style-modern.jpg",
+    "source": "Poly Haven",
+    "source_slug": "hotel_room",
+    "author": "Greg Zaal",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/hotel_room"
+  },
+  {
+    "style_id": "wood",
+    "name": "日式原木",
+    "room": "木色起居",
+    "room_kinds": [
+      "客厅",
+      "书房",
+      "餐厅",
+      "厨房"
+    ],
+    "file": "style-wood.jpg",
+    "source": "Poly Haven",
+    "source_slug": "wooden_lounge",
+    "author": "Greg Zaal",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/wooden_lounge"
+  },
+  {
+    "style_id": "cream",
+    "name": "奶油风",
+    "room": "暖色客房",
+    "room_kinds": [
+      "主卧",
+      "次卧",
+      "儿童",
+      "客厅"
+    ],
+    "file": "style-cream.jpg",
+    "source": "Poly Haven",
+    "source_slug": "lythwood_room",
+    "author": "Greg Zaal",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/lythwood_room"
+  },
+  {
+    "style_id": "green",
+    "name": "中古绿",
+    "room": "绿色客厅",
+    "room_kinds": [
+      "客厅",
+      "餐厅"
+    ],
+    "file": "style-green.jpg",
+    "source": "Poly Haven",
+    "source_slug": "anniversary_lounge",
+    "author": "Greg Zaal",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/anniversary_lounge"
+  },
+  {
+    "style_id": "white",
+    "name": "极简白",
+    "room": "通透厅",
+    "room_kinds": [
+      "客厅",
+      "阳台",
+      "厨房",
+      "次卧"
+    ],
+    "file": "style-white.jpg",
+    "source": "Poly Haven",
+    "source_slug": "small_empty_house",
+    "author": "Greg Zaal",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/small_empty_house"
+  },
+  {
+    "style_id": "night",
+    "name": "夜色客厅",
+    "room": "暖色餐厅",
+    "room_kinds": [
+      "餐厅",
+      "厨房",
+      "客厅"
+    ],
+    "file": "style-night.jpg",
+    "source": "Poly Haven",
+    "source_slug": "warm_restaurant_night",
+    "author": "Greg Zaal, Jarod Guest",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/warm_restaurant_night"
+  },
+  {
+    "style_id": "french",
+    "name": "法式轻奢",
+    "room": "阅读书房",
+    "room_kinds": [
+      "书房",
+      "客厅"
+    ],
+    "file": "style-french.jpg",
+    "source": "Poly Haven",
+    "source_slug": "reading_room",
+    "author": "Greg Zaal",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/reading_room"
+  },
+  {
+    "style_id": "loft",
+    "name": "工业风",
+    "room": "工坊空间",
+    "room_kinds": [
+      "书房",
+      "阳台",
+      "客厅"
+    ],
+    "file": "style-loft.jpg",
+    "source": "Poly Haven",
+    "source_slug": "artist_workshop",
+    "author": "Oliksiy Yakovlyev",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/artist_workshop"
+  },
+  {
+    "style_id": "luxe",
+    "name": "轻奢意式",
+    "room": "精致厅",
+    "room_kinds": [
+      "客厅",
+      "餐厅"
+    ],
+    "file": "style-luxe.jpg",
+    "source": "Poly Haven",
+    "source_slug": "ballroom",
+    "author": "Sergej Majboroda",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/ballroom"
+  },
+  {
+    "style_id": "sea",
+    "name": "地中海",
+    "room": "阳台廊道",
+    "room_kinds": [
+      "阳台",
+      "客厅",
+      "主卧"
+    ],
+    "file": "style-sea.jpg",
+    "source": "Poly Haven",
+    "source_slug": "veranda",
+    "author": "Greg Zaal",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/veranda"
+  },
+  {
+    "style_id": "wabi",
+    "name": "侘寂风",
+    "room": "素色起居",
+    "room_kinds": [
+      "客厅",
+      "书房",
+      "主卧"
+    ],
+    "file": "style-wabi.jpg",
+    "source": "Poly Haven",
+    "source_slug": "cabin",
+    "author": "Greg Zaal",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/cabin"
+  },
+  {
+    "style_id": "blush",
+    "name": "柔粉现代",
+    "room": "卫浴间",
+    "room_kinds": [
+      "卫浴",
+      "主卧"
+    ],
+    "file": "style-blush.jpg",
+    "source": "Poly Haven",
+    "source_slug": "en_suite",
+    "author": "Greg Zaal",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/en_suite"
+  },
+  {
+    "style_id": "bath",
+    "name": "现代卫浴",
+    "room": "明亮卫浴",
+    "room_kinds": [
+      "卫浴"
+    ],
+    "file": "style-bath.jpg",
+    "source": "Poly Haven",
+    "source_slug": "modern_bathroom",
+    "author": "Adrian Kubasa",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/modern_bathroom"
+  },
+  {
+    "style_id": "spa",
+    "name": "简约卫浴",
+    "room": "干净卫浴",
+    "room_kinds": [
+      "卫浴"
+    ],
+    "file": "style-spa.jpg",
+    "source": "Poly Haven",
+    "source_slug": "bathroom",
+    "author": "Andreas Mischok",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/bathroom"
+  },
+  {
+    "style_id": "sofa",
+    "name": "暖光起居",
+    "room": "沙发厅",
+    "room_kinds": [
+      "客厅",
+      "餐厅"
+    ],
+    "file": "style-sofa.jpg",
+    "source": "Poly Haven",
+    "source_slug": "lythwood_lounge",
+    "author": "Greg Zaal",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/lythwood_lounge"
+  },
+  {
+    "style_id": "suite",
+    "name": "海景套房",
+    "room": "明亮卧室",
+    "room_kinds": [
+      "主卧",
+      "次卧",
+      "阳台"
+    ],
+    "file": "style-suite.jpg",
+    "source": "Poly Haven",
+    "source_slug": "relax_inn_seaview_suite",
+    "author": "Sergej Majboroda",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/relax_inn_seaview_suite"
+  },
+  {
+    "style_id": "hearth",
+    "name": "壁炉暖厅",
+    "room": "夜色起居",
+    "room_kinds": [
+      "客厅",
+      "餐厅"
+    ],
+    "file": "style-hearth.jpg",
+    "source": "Poly Haven",
+    "source_slug": "fireplace",
+    "author": "Andreas Mischok",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/fireplace"
+  },
+  {
+    "style_id": "dining",
+    "name": "日光餐厅",
+    "room": "餐厅空间",
+    "room_kinds": [
+      "餐厅",
+      "厨房",
+      "客厅"
+    ],
+    "file": "style-dining.jpg",
+    "source": "Poly Haven",
+    "source_slug": "warm_restaurant",
+    "author": "Andreas Mischok",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/warm_restaurant"
+  },
+  {
+    "style_id": "atelier",
+    "name": "艺术书房",
+    "room": "创作间",
+    "room_kinds": [
+      "书房",
+      "客厅"
+    ],
+    "file": "style-atelier.jpg",
+    "source": "Poly Haven",
+    "source_slug": "art_studio",
+    "author": "Sergej Majboroda",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/art_studio"
+  },
+  {
+    "style_id": "air",
+    "name": "留白小间",
+    "room": "通透空房",
+    "room_kinds": [
+      "次卧",
+      "儿童",
+      "书房"
+    ],
+    "file": "style-air.jpg",
+    "source": "Poly Haven",
+    "source_slug": "small_empty_room_1",
+    "author": "Andreas Mischok",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/small_empty_room_1"
+  },
+  {
+    "style_id": "quiet",
+    "name": "静谧小室",
+    "room": "安静房间",
+    "room_kinds": [
+      "次卧",
+      "主卧",
+      "书房"
+    ],
+    "file": "style-quiet.jpg",
+    "source": "Poly Haven",
+    "source_slug": "small_empty_room_3",
+    "author": "Andreas Mischok",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/small_empty_room_3"
+  },
+  {
+    "style_id": "foyer",
+    "name": "玄关厅",
+    "room": "进门空间",
+    "room_kinds": [
+      "客厅",
+      "阳台"
+    ],
+    "file": "style-foyer.jpg",
+    "source": "Poly Haven",
+    "source_slug": "entrance_hall",
+    "author": "Andreas Mischok",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/entrance_hall"
+  },
+  {
+    "style_id": "walk",
+    "name": "走廊阳台",
+    "room": "通行廊道",
+    "room_kinds": [
+      "阳台",
+      "客厅"
+    ],
+    "file": "style-walk.jpg",
+    "source": "Poly Haven",
+    "source_slug": "old_apartments_walkway",
+    "author": "Andreas Mischok",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/old_apartments_walkway"
+  },
+  {
+    "style_id": "glass",
+    "name": "玻璃花房",
+    "room": "绿意阳台",
+    "room_kinds": [
+      "阳台",
+      "客厅"
+    ],
+    "file": "style-glass.jpg",
+    "source": "Poly Haven",
+    "source_slug": "glasshouse_interior",
+    "author": "Andreas Mischok",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/glasshouse_interior"
+  },
+  {
+    "style_id": "amber",
+    "name": "暮色内厅",
+    "room": "暖色客厅",
+    "room_kinds": [
+      "客厅",
+      "餐厅"
+    ],
+    "file": "style-amber.jpg",
+    "source": "Poly Haven",
+    "source_slug": "kiara_interior",
+    "author": "Greg Zaal",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/kiara_interior"
+  },
+  {
+    "style_id": "aft",
+    "name": "休闲厅",
+    "room": "轻松起居",
+    "room_kinds": [
+      "客厅",
+      "书房"
+    ],
+    "file": "style-aft.jpg",
+    "source": "Poly Haven",
+    "source_slug": "aft_lounge",
+    "author": "Andreas Mischok",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/aft_lounge"
+  },
+  {
+    "style_id": "kominka",
+    "name": "和式木作",
+    "room": "木色空间",
+    "room_kinds": [
+      "客厅",
+      "书房",
+      "主卧"
+    ],
+    "file": "style-kominka.jpg",
+    "source": "Poly Haven",
+    "source_slug": "studio_kominka_01",
+    "author": "Jarod Guest",
+    "license": "CC0",
+    "url": "https://polyhaven.com/a/studio_kominka_01"
+  }
+]

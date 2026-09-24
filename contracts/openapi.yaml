@@ -1,0 +1,113 @@
+openapi: 3.0.3
+info:
+  title: House Design API
+  version: 0.1.0
+  description: |
+    版本化契约。错误体包含 code、message、可选 details、request_id。
+    时间为 UTC ISO-8601。ID 为带前缀的字符串。分页为 items + next_cursor。
+    场景能力为 VR 全景：manifest 暴露各房间等距柱状 JPEG 的短期签名 URL；
+    查看器为 webview-vr（Three.js 球体贴图）。不提供 /3d-assets 路径。
+servers:
+  - url: http://127.0.0.1:8000/api/v1
+paths:
+  /health:
+    get:
+      summary: 健康检查（同时挂在根路径 /health）
+  /auth/login:
+    post:
+      summary: 登录并签发 JWT
+  /auth/sms/send:
+    post:
+      summary: 本地模拟签发一次性验证码，不调用短信厂商
+  /auth/wechat/challenge:
+    post:
+      summary: 签发一次性微信授权 state
+  /auth/wechat:
+    post:
+      summary: 用 state 和本机身份换 JWT，同一身份回到同一账号
+  /projects:
+    get:
+      summary: 当前用户的项目列表
+    post:
+      summary: 创建项目
+  /projects/{project_id}:
+    get:
+      summary: 项目详情
+    patch:
+      summary: 更新或归档项目
+    delete:
+      summary: 删除项目并排队清理文件
+  /projects/{project_id}/profile:
+    get:
+      summary: 房屋资料
+    put:
+      summary: 保存房屋资料与硬约束
+  /projects/{project_id}/assets/upload-url:
+    post:
+      summary: 申请图片上传签名
+  /projects/{project_id}/assets/{asset_id}/complete:
+    post:
+      summary: 确认图片上传完成
+  /projects/{project_id}/assets/{asset_id}/download-url:
+    get:
+      summary: 短期下载签名
+  /projects/{project_id}/analysis-tasks:
+    post:
+      summary: 创建户型分析任务
+  /projects/{project_id}/analysis-tasks/{task_id}/confirm:
+    post:
+      summary: 确认或修正识别结果
+  /tasks/{task_id}:
+    get:
+      summary: 任务权威状态
+  /tasks/{task_id}/retry:
+    post:
+      summary: 重试失败任务
+  /tasks/{task_id}/cancel:
+    post:
+      summary: 取消未完成任务
+  /tasks/{task_id}/events:
+    get:
+      summary: 任务事件回放
+  /projects/{project_id}/messages:
+    post:
+      summary: 发送对话消息
+  /conversations/{conversation_id}/events:
+    get:
+      summary: 对话事件回放
+  /projects/{project_id}/design-versions:
+    get:
+      summary: 设计版本列表
+    post:
+      summary: 保存设计草案（需确认）
+  /projects/{project_id}/design-versions/{version_id}/confirm:
+    post:
+      summary: 选定设计版本
+  /projects/{project_id}/design-versions/{version_id}/rollback:
+    post:
+      summary: 回退到指定版本
+  /projects/{project_id}/render-tasks:
+    post:
+      summary: 创建效果图任务（需确认）
+  /projects/{project_id}/scene-tasks:
+    post:
+      summary: 创建 VR 全景场景任务（产出等距柱状 JPEG 与 manifest）
+  /projects/{project_id}/scene-versions/{version_id}/manifest:
+    get:
+      summary: 读取不可变场景 manifest（含全景 JPEG 签名 URL、房间列表）
+  /projects/{project_id}/scene-versions/{version_id}/confirm:
+    post:
+      summary: 确认场景版本
+components:
+  schemas:
+    Error:
+      type: object
+      required: [code, message, request_id]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details: {}
+        request_id:
+          type: string

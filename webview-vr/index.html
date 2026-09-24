@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>VR 全景环视</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #111; color: #fff; font-family: "Segoe UI", "PingFang SC", sans-serif; touch-action: none; }
+    canvas {
+      position: absolute !important; inset: 0; z-index: 1; width: 100% !important; height: 100% !important;
+      touch-action: none;
+    }
+    #back {
+      display: none; position: absolute; left: 12px; top: 12px; z-index: 20;
+      border: 0; border-radius: 12px; padding: 10px 14px; cursor: pointer;
+      background: rgba(0,0,0,.72); color: #fff; font-size: 14px; font-weight: 700;
+      pointer-events: auto;
+    }
+    #label { position: absolute; left: 12px; top: 12px; z-index: 2; font-size: 12px; line-height: 1.4; pointer-events: none; background: rgba(0,0,0,.55); padding: 6px 10px; border-radius: 10px; max-width: 70%; }
+    body.has-back #label { left: 88px; }
+    #hint { position: absolute; right: 12px; bottom: 56px; z-index: 2; font-size: 11px; opacity: .8; pointer-events: none; background: rgba(0,0,0,.4); padding: 4px 8px; border-radius: 8px; }
+    #rooms {
+      position: absolute; left: 12px; right: 12px; bottom: 12px; z-index: 20;
+      display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px;
+      -webkit-overflow-scrolling: touch; pointer-events: auto;
+    }
+    body.hide-rooms #rooms { display: none; }
+    #rooms button {
+      flex: 0 0 auto; border: 1px solid rgba(255,255,255,.25); background: rgba(20,53,47,.88);
+      color: #fff; border-radius: 999px; padding: 10px 16px; font-size: 13px; cursor: pointer;
+      pointer-events: auto; touch-action: manipulation;
+    }
+    #rooms button.active { background: #C6A36A; color: #14352F; border-color: transparent; font-weight: 700; }
+    #empty {
+      display: none; position: absolute; inset: 0; z-index: 4; align-items: center; justify-content: center;
+      flex-direction: column; gap: 10px; background: #2F463F; text-align: center; padding: 24px;
+    }
+    #empty.show { display: flex; }
+    #empty strong { font-size: 16px; }
+    #empty p { margin: 0; opacity: .85; font-size: 13px; line-height: 1.5; max-width: 320px; }
+  </style>
+</head>
+<body>
+  <button id="back" type="button">返回</button>
+  <div id="label">VR 全景示意 · 拖动环视 · 不是 BIM</div>
+  <div id="hint">拖动环视 · 滚轮缩放</div>
+  <div id="rooms"></div>
+  <div id="empty">
+    <strong>等待加载全景</strong>
+    <p>从当前页面进入即可环视。仅供装修灵感，不构成结构、施工结论。</p>
+  </div>
+  <script type="module">
+    import * as THREE from "./vendor/three.module.min.js";
+
+    const label = document.getElementById("label");
+    const backBtn = document.getElementById("back");
+    const roomsEl = document.getElementById("rooms");
+    const emptyEl = document.getElementById("empty");
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 0, 0.01);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance" });
+    renderer.setPixelRatio(1);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.domElement.style.touchAction = "none";
+    document.body.appendChild(renderer.domElement);
+
+    const geometry = new THREE.SphereGeometry(500, 48, 32);
+    geometry.scale(-1, 1, 1);
+    const material = new THREE.MeshBasicMaterial({ color: 0x6F8F82 });
+    const sphere = new THREE.Mesh(geometry, material);
+    scene.add(sphere);
+
+    const loader = new THREE.TextureLoader();
+    loader.crossOrigin = "anonymous";
+
+    let lon = 0;
+    let lat = 0;
+    let fov = 75;
+    let dragging = false;
+    let pointerId = null;
+    let lastX = 0;
+    let lastY = 0;
+    let lookDirty = true;
+    let sceneVersionId = null;
+    let panoramas = [];
+    let currentRoom = null;
+    let photoMode = false;
+
+    function emit(type, extra) {
+      const body = Object.assign({ type }, extra || {});
+      const text = JSON.stringify(body);
+      if (window.HouseViewer && window.HouseViewer.postMessage) {
+        window.HouseViewer.postMessage(text);
+      }
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage(body, "*");
+        }
+      } catch (_) {}
+    }
+
+    function applyLook() {
+      lat = Math.max(-85, Math.min(85, lat));
+      const phi = THREE.MathUtils.degToRad(90 - lat);
+      const theta = THREE.MathUtils.degToRad(lon);
+      camera.lookAt(
+        500 * Math.sin(phi) * Math.cos(theta),
+        500 * Math.cos(phi),
+        500 * Math.sin(phi) * Math.sin(theta)
+      );
+    }
+
+    function absoluteUrl(url) {
+      if (!url) return null;
+      if (url.startsWith("http")) return url;
+      return window.location.origin + url;
+    }
+
+    function roomKey(value) {
+      return value == null ? "" : String(value);
+    }
+
+    function renderRoomChips() {
+      roomsEl.innerHTML = "";
+      panoramas.forEach((item) => {
+        const id = roomKey(item.room_id);
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = item.name || id || "房间";
+        if (id && id === roomKey(currentRoom)) btn.classList.add("active");
+        btn.addEventListener("pointerdown", (e) => {
+          e.stopPropagation();
+        });
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          window.hostSetCamera(id);
+        });
+        roomsEl.appendChild(btn);
+      });
+    }
+
+    function loadPanorama(item) {
+      if (!item || !item.url) {
+        emptyEl.classList.add("show");
+        emit("scene.error", { message: "没有可环视的全景" });
+        return;
+      }
+      emptyEl.classList.remove("show");
+      currentRoom = item.room_id;
+      renderRoomChips();
+      emit("scene.progress", { progress: 0.2 });
+      loader.load(
+        absoluteUrl(item.url),
+        (texture) => {
+          texture.colorSpace = THREE.SRGBColorSpace;
+          texture.generateMipmaps = false;
+          texture.minFilter = THREE.LinearFilter;
+          texture.magFilter = THREE.LinearFilter;
+          if (sphere.material.map) sphere.material.map.dispose();
+          sphere.material.map = texture;
+          sphere.material.color.set(0xffffff);
+          sphere.material.needsUpdate = true;
+          lookDirty = true;
+          label.textContent = photoMode
+            ? ((item.name ? item.name + " · " : "") + (item.scene_label ? item.scene_label + " · " : "") + "拖动环视")
+            : ((item.name ? item.name + " · " : "") + "VR 全景示意，只供环视灵感。");
+          emit("scene.loaded", {
+            readonly: true,
+            mode: "vr_panorama",
+            room: item.room_id,
+            scene_version_id: sceneVersionId,
+          });
+          emit("scene.room.switch", { room: item.room_id });
+          emit("scene.camera.set", { camera: item.room_id });
+          emit("scene.progress", { progress: 1 });
+        },
+        (event) => {
+          if (event.total) emit("scene.progress", { progress: Math.min(0.95, event.loaded / event.total) });
+        },
+        () => {
+          emptyEl.classList.add("show");
+          emptyEl.querySelector("strong").textContent = "全景贴图失败";
+          emptyEl.querySelector("p").textContent = "图片打不开或已过期。请回到 App 点「重新生成」，或先看效果图。";
+          sphere.material.color.set(0x6F8F82);
+          if (sphere.material.map) {
+            sphere.material.map.dispose();
+            sphere.material.map = null;
+            sphere.material.needsUpdate = true;
+          }
+          emit("scene.error", { message: "全景加载失败，可降级回效果图" });
+        }
+      );
+    }
+
+    window.hostLoadScene = function (payload) {
+      try {
+        lon = 0;
+        lat = 0;
+        fov = 75;
+        camera.fov = fov;
+        camera.updateProjectionMatrix();
+        lookDirty = true;
+        const showBack = !!(payload && payload.showBack);
+        const hideRooms = !!(payload && payload.hideNativeRooms);
+        backBtn.style.display = showBack ? "block" : "none";
+        document.body.classList.toggle("has-back", showBack);
+        document.body.classList.toggle("hide-rooms", hideRooms);
+        photoMode = !!(payload && payload.photo);
+        sceneVersionId = payload && payload.scene_version_id ? payload.scene_version_id : null;
+        panoramas = ((payload && payload.panoramas) || []).map((row) => ({
+          room_id: roomKey(row && row.room_id),
+          name: row && row.name != null ? String(row.name) : "",
+          url: row && row.url != null ? String(row.url) : "",
+          scene_label: row && row.scene_label != null ? String(row.scene_label) : "",
+          room_kind: row && row.room_kind != null ? String(row.room_kind) : "",
+        })).filter((row) => row.url);
+        emit("scene.load", { scene_version_id: sceneVersionId, rooms: panoramas.length });
+        const defaultRoom = roomKey((payload && payload.default_room) || (panoramas[0] && panoramas[0].room_id));
+        const first = panoramas.find((row) => roomKey(row.room_id) === defaultRoom) || panoramas[0];
+        if (!first) {
+          emptyEl.classList.add("show");
+          emit("scene.error", { message: "没有可环视的全景" });
+          return;
+        }
+        loadPanorama(first);
+      } catch (err) {
+        emit("scene.error", { message: String(err) });
+      }
+    };
+
+    window.hostSetCamera = function (name) {
+      const key = roomKey(name);
+      const item = panoramas.find((row) => roomKey(row.room_id) === key);
+      if (!item) {
+        emit("scene.camera.set", { camera: key });
+        return;
+      }
+      loadPanorama(item);
+    };
+
+    window.hostResetLook = function () {
+      lon = 0;
+      lat = 0;
+      fov = 75;
+      camera.fov = fov;
+      camera.updateProjectionMatrix();
+      lookDirty = true;
+      emit("scene.camera.reset", {});
+    };
+
+    window.hostDispose = function () {
+      emit("scene.dispose", {});
+    };
+
+    window.addEventListener("message", (event) => {
+      const data = event && event.data;
+      if (!data || typeof data !== "object") return;
+      if (data.channel !== "house_vr") return;
+      if (data.action === "load" && data.payload) {
+        window.hostLoadScene(data.payload);
+      } else if (data.action === "setCamera" && data.room) {
+        window.hostSetCamera(data.room);
+      } else if (data.action === "resetLook") {
+        window.hostResetLook();
+      } else if (data.action === "dispose") {
+        window.hostDispose();
+      }
+    });
+
+    function tryBootFromHash() {
+      try {
+        const hash = window.location.hash || "";
+        if (!hash.startsWith("#boot=")) return false;
+        const raw = decodeURIComponent(hash.slice(6));
+        const payload = JSON.parse(raw);
+        if (payload && payload.panoramas) {
+          window.hostLoadScene(payload);
+          return true;
+        }
+      } catch (_) {}
+      return false;
+    }
+
+    function tryBootFromStorage() {
+      try {
+        const raw = sessionStorage.getItem("house_vr_boot");
+        if (!raw) return false;
+        sessionStorage.removeItem("house_vr_boot");
+        const payload = JSON.parse(raw);
+        if (payload && payload.panoramas) {
+          window.hostLoadScene(payload);
+          return true;
+        }
+      } catch (_) {}
+      return false;
+    }
+
+    function stopDrag(e) {
+      if (pointerId !== null && e && e.pointerId !== pointerId) return;
+      dragging = false;
+      pointerId = null;
+    }
+    backBtn.addEventListener("pointerdown", (e) => {
+      e.stopPropagation();
+    });
+    backBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      emit("scene.close", {});
+    });
+    renderer.domElement.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0 && e.pointerType === "mouse") return;
+      dragging = true;
+      pointerId = e.pointerId;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      try { renderer.domElement.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+    renderer.domElement.addEventListener("pointerup", stopDrag);
+    renderer.domElement.addEventListener("pointercancel", stopDrag);
+    renderer.domElement.addEventListener("pointermove", (e) => {
+      if (!dragging || (pointerId !== null && e.pointerId !== pointerId)) return;
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      if (dx === 0 && dy === 0) return;
+      const speed = fov / 75;
+      lon -= dx * 0.18 * speed;
+      lat += dy * 0.14 * speed;
+      lookDirty = true;
+    });
+    renderer.domElement.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      fov = Math.max(40, Math.min(90, fov + e.deltaY * 0.03));
+      camera.fov = fov;
+      camera.updateProjectionMatrix();
+      lookDirty = true;
+    }, { passive: false });
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && backBtn.style.display !== "none") emit("scene.close", {});
+    });
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    let frames = 0;
+    let lastFpsAt = performance.now();
+    function tick() {
+      if (lookDirty) {
+        applyLook();
+        lookDirty = false;
+        renderer.render(scene, camera);
+        frames += 1;
+      }
+      const now = performance.now();
+      if (now - lastFpsAt >= 1000) {
+        emit("scene.stats", { fps: frames, mode: "vr_panorama" });
+        frames = 0;
+        lastFpsAt = now;
+      }
+      requestAnimationFrame(tick);
+    }
+    lookDirty = true;
+    tick();
+    emit("scene.loaded", { readonly: true, mode: "vr_panorama", bootstrap: true });
+    if (!tryBootFromHash() && !tryBootFromStorage()) {
+      emptyEl.classList.add("show");
+    }
+  </script>
+</body>
+</html>

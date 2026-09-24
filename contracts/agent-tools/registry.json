@@ -1,0 +1,15 @@
+{
+  "version": "tools_v0",
+  "tools": [
+    {"name": "get_project_context", "needs_confirmation": false},
+    {"name": "analyze_floor_plan", "needs_confirmation": false},
+    {"name": "list_uncertainties", "needs_confirmation": false},
+    {"name": "validate_design_constraints", "needs_confirmation": false},
+    {"name": "generate_layout_options", "needs_confirmation": false},
+    {"name": "save_design_draft", "needs_confirmation": true},
+    {"name": "create_render_task", "needs_confirmation": true},
+    {"name": "get_task_status", "needs_confirmation": false},
+    {"name": "estimate_budget_range", "needs_confirmation": false},
+    {"name": "delete_project_assets", "needs_confirmation": true, "requires_user_action": true}
+  ]
+}

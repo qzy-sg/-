@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.claude/
+data/store/
+tests/_file_store/
+.local-assets/
+apps/mobile/.dart_tool/
+apps/mobile/build/
+apps/mobile/.flutter-plugins-dependencies
+.idea/
+.DS_Store
+.env
+*.db
+house_local.db

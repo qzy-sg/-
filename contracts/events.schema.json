@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DomainEvent",
+  "type": "object",
+  "required": ["id", "type", "sequence", "created_at", "data"],
+  "properties": {
+    "id": { "type": "string" },
+    "type": {
+      "type": "string",
+      "enum": [
+        "task.created",
+        "phase.started",
+        "assistant.delta",
+        "tool.started",
+        "tool.completed",
+        "approval.required",
+        "task.progress",
+        "task.completed",
+        "task.failed"
+      ]
+    },
+    "task_id": { "type": ["string", "null"] },
+    "sequence": { "type": "integer", "minimum": 1 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "data": { "type": "object" }
+  }
+}
